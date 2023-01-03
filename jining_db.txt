@@ -1,0 +1,105 @@
+create table TBL_Shop(
+shop_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    shop_name varchar(20) not null,
+    shop_site_x varchar(30) not null,
+    shop_site_y varchar(30) not null,
+    shop_review_grade int(3) not null,
+    shop_review_number int not null
+);
+
+insert into TBL_Shop(shop_name, shop_site_x, shop_site_y, shop_review_grade, shop_review_number) values ("진이네", "3.14521556", "7.0535", 35, 10);
+
+select * from TBL_Shop;
+
+create table TBL_Taste(
+    shop_id int not null PRIMARY KEY,
+    info1 varchar(20) not null default 'n',
+    info2 varchar(20) not null default 'n',
+    info3 varchar(20) not null default 'n',
+	info4 varchar(20) not null default 'n',
+	info5 varchar(20) not null default 'n',
+	info6 varchar(20) not null default 'n',
+	info7 varchar(20) not null default 'n',
+	info8 varchar(20) not null default 'n',
+	info9 varchar(20) not null default 'n',
+	info10 varchar(20) not null default 'n',
+	info11 varchar(20) not null default 'n',
+	info12 varchar(20) not null default 'n',
+	info13 varchar(20) not null default 'n',
+	info14 varchar(20) not null default 'n',
+	info15 varchar(20) not null default 'n',
+	info16 varchar(20) not null default 'n',
+	info17 varchar(20) not null default 'n',
+	info18 varchar(20) not null default 'n',
+	info19 varchar(20) not null default 'n',
+	info20 varchar(20) not null default 'n',
+    FOREIGN KEY(shop_id) REFERENCES TBL_Shop(shop_id)
+);
+
+insert into TBL_Taste(shop_id) values('1');
+update TBL_Taste set info1 = 'y' where shop_id='1';
+
+create table TBL_Taste_Info(
+   tasteKey num INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+   tasteValue varchar(20) not null
+)
+
+insert into TBL_Taste_info(tasteValue) values('팥');
+insert into TBL_Taste_info(tasteValue) values('슈크림');
+insert into TBL_Taste_info(tasteValue) values('김치');
+insert into TBL_Taste_info(tasteValue) values('피자');
+
+select * from tbl_taste_info;
+
+update cream_types set info1 = 'y' where shop_id='가게아이디';
+
+
+create table TBL_Customer(
+	customer_email varchar(40) not null  PRIMARY KEY,
+    customer_name varchar(20) not null,
+    customer_nickname varchar(20) not null unique
+);
+
+insert into TBL_Customer(customer_email, customer_name, customer_nickname) values('hjklkj12@naver.com', '김진', "팥팥")
+
+create table TBL_Owner(
+	Owner_email varchar(40) not null  PRIMARY KEY,
+    Owner_name varchar(20) not null,
+    Owner_nickname varchar(20) not null unique,
+    shop_id int not null,
+	FOREIGN KEY(shop_id) REFERENCES TBL_Shop(shop_id)
+);
+
+insert into TBL_Owner(Owner_email, Owner_name, Owner_nickname, shop_id) values('suhyun@naver.com', '조수현', "붕어빵엄마", "1");
+
+create table TBL_Review(
+	review_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    shop_id  int not null,
+    customer_email varchar(40) not null,
+    review_title varchar(20) not null,
+    review_grade int(3) not null,
+    review_contents varchar(100),
+    review_date timestamp not null default now(),
+    FOREIGN KEY(shop_id) REFERENCES TBL_Shop(shop_id),
+    FOREIGN KEY(customer_email) REFERENCES TBL_Customer(customer_email)
+);
+
+insert into TBL_review(shop_id, customer_email, review_title, review_grade, review_contents) values(1, "hjklkj12@naver.com", "맛있어요", 50, "팥이 적당히 달아요");
+
+create table TBL_Review_Image(  
+     image_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+     image_path varchar(100),    
+     review_id int not null,
+     FOREIGN KEY(review_id) REFERENCES TBL_review(review_id) 
+);
+
+
+
+
+
+
+
+
+
+
+
