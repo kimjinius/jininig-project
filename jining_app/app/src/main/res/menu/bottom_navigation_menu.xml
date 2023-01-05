@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/tab_home"
+        android:enabled="true"
+        android:icon="@drawable/ic_ingeo"
+        android:title="홈"/>
+
+    <item
+        android:id="@+id/tab_rank"
+        android:enabled="true"
+        android:icon="@drawable/ic_rank"
+        android:title="순위"/>
+
+    <item
+        android:id="@+id/tab_user"
+        android:enabled="true"
+        android:icon="@drawable/ic_profile"
+        android:title="내 정보"/>
+
+</menu>
