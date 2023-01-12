@@ -4,12 +4,12 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import com.example.jin_ing.databinding.ActivityMainBinding
+import com.naver.maps.map.NaverMap
 
 class MainActivity : AppCompatActivity() {
 
     private var mBinding: ActivityMainBinding? = null
     private val binding get() = mBinding!!
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

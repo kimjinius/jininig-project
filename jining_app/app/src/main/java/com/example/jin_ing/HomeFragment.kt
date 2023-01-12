@@ -1,52 +1,44 @@
 package com.example.jin_ing
 
-import android.Manifest.permission.ACCESS_COARSE_LOCATION
-import android.Manifest.permission.ACCESS_FINE_LOCATION
-import android.annotation.SuppressLint
 import android.content.Context
-import android.content.pm.PackageManager
-import android.location.Geocoder
-import android.location.Location
-import android.location.LocationManager
-import android.location.LocationRequest
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import com.google.android.gms.location.FusedLocationProviderClient
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.*
+import com.naver.maps.map.util.FusedLocationSource
 
-import com.naver.maps.map.MapView
-import java.util.*
-
-
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(), OnMapReadyCallback{
 
     private lateinit var mapView: MapView
 
-    private var mFusedLocationProviderClient: FusedLocationProviderClient? = null // 현재 위치를 가져오기 위한 변수
-    lateinit var mLastLocation: Location // 위치 값을 가지고 있는 객체
-    internal lateinit var mLocationRequest: LocationRequest // 위치 정보 요청의 매개변수를 저장하는
-    private val REQUEST_PERMISSION_LOCATION = 10
-
     private lateinit var ct : Context
 
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var locationSource: FusedLocationSource
+    private lateinit var naverMap: NaverMap
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-        var view:View = inflater.inflate(R.layout.fragment_home, container, false)
         ct = container!!.context
+        locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
 
+        val options = NaverMapOptions()
+            .camera(CameraPosition(LatLng(35.1798159, 129.0750222), 15.0))
+            .mapType(NaverMap.MapType.Terrain)
 
+        val fm: FragmentManager = childFragmentManager
+        val mapFragment = MapFragment.newInstance(options)
+        fm.beginTransaction().add(R.id.map_view, mapFragment).commit()
 
-        return view
+        mapFragment.getMapAsync(this);
+
+        return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -90,78 +82,35 @@ class HomeFragment : Fragment() {
         mapView.onLowMemory()
     }
 
-    private fun getLocation(){
-        locatioNManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager?
-        var userLocation: Location = getLatLng()
-        if(userLocation != null){
-            latitude = userLocation.latitude
-            longitude = userLocation.longitude
-            Log.d("CheckCurrentLocation", "현재 내 위치 값: ${latitude}, ${longitude}")
-
-            var mGeoCoder =  Geocoder(applicationContext, Locale.KOREAN)
-            var mResultList: List<Address>? = null
-            try{
-                mResultList = mGeoCoder.getFromLocation(
-                    latitude!!, longitude!!, 1
-                )
-            }catch(e: IOException){
-                e.printStackTrace()
+    override fun onRequestPermissionsResult(requestCode: Int,
+                                            permissions: Array<String>,
+                                            grantResults: IntArray) {
+        if (locationSource.onRequestPermissionsResult(requestCode, permissions,
+                grantResults)) {
+            if (!locationSource.isActivated) { // 권한 거부됨
+                naverMap.locationTrackingMode = LocationTrackingMode.None
             }
-            if(mResultList != null){
-                Log.d("CheckCurrentLocation", mResultList[0].getAddressLine(0))
-            }
+            return
         }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    private fun getLatLng(): Location{
-        var currentLatLng: Location? = null
+    override fun onMapReady(naverMap: NaverMap) {
+        this.naverMap = naverMap
+        naverMap.locationSource = locationSource
+        naverMap.locationTrackingMode = LocationTrackingMode.Follow
 
-        var hasFineLocationPermission = ContextCompat.checkSelfPermission(ct,
-            Manifest.permission.ACCESS_FINE_LOCATION)
-        var hasCoarseLocationPermission = ContextCompat.checkSelfPermission(ct,
-            Manifest.permission.ACCESS_COARSE_LOCATION)
+        naverMap.addOnLocationChangeListener { location ->
 
-        if(hasFineLocationPermission == PackageManager.PERMISSION_GRANTED &&
-            hasCoarseLocationPermission == PackageManager.PERMISSION_GRANTED){
-            val locatioNProvider = LocationManager.GPS_PROVIDER
-            currentLatLng = locatioNManager?.getLastKnownLocation(locatioNProvider)
-        }else{
-            if(ActivityCompat.shouldShowRequestPermissionRationale(this, REQUIRED_PERMISSIONS[0])){
-                Toast.makeText(this, "앱을 실행하려면 위치 접근 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
-                ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, PERMISSIONS_REQUEST_CODE)
-            }else{
-                ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, PERMISSIONS_REQUEST_CODE)
-            }
-            currentLatLng = getLatLng()
+//            Toast.makeText(ct, "${location.latitude}, ${location.longitude}",
+//                Toast.LENGTH_SHORT).show()
+
         }
-        return currentLatLng!!
+
     }
 
-    fusedLocationClient = LocationServices.getFusedLocationProviderClient(ct);
+    companion object {
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
 
-    @SuppressLint("MissingPermission")
-    private fun checkLocationPermission() {
-        if (ActivityCompat.checkSelfPermission(
-                ct, Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                ct, Manifest.permission.ACCESS_COARSE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            fusedLocationClient.lastLocation
-                .addOnSuccessListener { location: Location? ->
-                    // Got last known location. In some rare situations this can be null.
-                    var geocoder = Geocoder(ct, Locale.KOREA)
-                    if (location != null) {
-                        Toast.makeText(
-                            ct,
-                            "현재위치..." + location.latitude + " / " + location.longitude,
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-        } else {
-            Toast.makeText(this, "위치권한이 없습니다..", Toast.LENGTH_SHORT).show()
-
-        }
     }
 }
