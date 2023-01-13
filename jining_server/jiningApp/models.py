@@ -7,19 +7,17 @@ class TblCustomer(models.Model):
     customer_nickname = models.CharField(unique=True, max_length=20)
 
     def __str__(self):
-        return self.title
+        return self.customer_email
 
 
 class TblOwner(models.Model):
-    owner_email = models.CharField(db_column='Owner_email', primary_key=True,
-                                   max_length=40)  # Field name made lowercase.
-    owner_name = models.CharField(db_column='Owner_name', max_length=20)  # Field name made lowercase.
-    owner_nickname = models.CharField(db_column='Owner_nickname', unique=True,
-                                      max_length=20)  # Field name made lowercase.
-    shop = models.ForeignKey('TblShop', models.DO_NOTHING)
+    owner_email = models.CharField(primary_key=True, max_length=40)
+    owner_name = models.CharField(max_length=20)
+    owner_nickname = models.CharField(unique=True, max_length=20)  # Field name made lowercase.
+    shop_id = models.ForeignKey("TblShop", related_name="shop_owner", on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.title
+        return self.owner_email
 
 
 class TblShop(models.Model):
@@ -31,11 +29,11 @@ class TblShop(models.Model):
     shop_review_number = models.IntegerField()
 
     def __str__(self):
-        return self.title
+        return str(self.shop_id)
 
 
 class TblTaste(models.Model):
-    shop = models.OneToOneField(TblShop, models.DO_NOTHING, primary_key=True)
+    shop_id = models.OneToOneField(TblShop, on_delete=models.CASCADE, primary_key=True)
     info1 = models.CharField(max_length=20)
     info2 = models.CharField(max_length=20)
     info3 = models.CharField(max_length=20)
@@ -58,33 +56,33 @@ class TblTaste(models.Model):
     info20 = models.CharField(max_length=20)
 
     def __str__(self):
-        return self.title
+        return str(self.shop_id)
 
 
 class TblTasteInfo(models.Model):
-    tastekey = models.AutoField(db_column='tasteKey', primary_key=True)  # Field name made lowercase.
-    tastevalue = models.CharField(db_column='tasteValue', max_length=20)  # Field name made lowercase.
+    taste_key = models.AutoField(primary_key=True)
+    taste_value = models.CharField(max_length=20)
 
     def __str__(self):
-        return self.title
+        return str(self.taste_key)
 
 
 class TblReview(models.Model):
     review_id = models.AutoField(primary_key=True)
-    shop_id = models.ForeignKey('TblShop', models.DO_NOTHING)
-    customer_id = models.ForeignKey('TblCustomer', models.DO_NOTHING)
+    shop_id = models.ForeignKey("TblShop", related_name="shop_review", on_delete=models.CASCADE)
+    customer_id = models.ForeignKey('TblCustomer', related_name="customer", on_delete=models.CASCADE)
     review_title = models.CharField(max_length=20)
     review_grade = models.IntegerField()
     review_contents = models.CharField(max_length=100)
 
     def __str__(self):
-        return self.title
+        return str(self.review_id)
 
 
 class TblReviewImage(models.Model):
     image_id = models.AutoField(primary_key=True)
     image_path = models.CharField(max_length=100)
-    review_id = models.ForeignKey('TblReview', models.DO_NOTHING)
+    review_id = models.ForeignKey('TblReview', related_name="review", on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.title
+        return str(self.image_id)

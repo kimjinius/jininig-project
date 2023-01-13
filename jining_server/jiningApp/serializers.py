@@ -11,14 +11,15 @@ class ShopSerializer(serializers.ModelSerializer):
 class TasteSerializer(serializers.ModelSerializer):
     class Meta:
         model = TblTaste
-        fields = ('shop', 'info1', 'info2', 'info3', 'info4', 'info5', 'info6', 'info7', 'info8', 'info9',
-                  'info10', 'info11', 'info12', 'info13', 'info14', 'info15', 'info16', 'info17', 'info18', 'info19', 'info20')
+        fields = ('shop_id', 'info1', 'info2', 'info3', 'info4', 'info5', 'info6', 'info7', 'info8', 'info9',
+                  'info10', 'info11', 'info12', 'info13', 'info14', 'info15', 'info16', 'info17', 'info18', 'info19',
+                  'info20')
 
 
 class TasteInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = TblTasteInfo
-        fields = ('tastekey', 'tastekey')
+        fields = ('taste_key', 'taste_value')
 
 
 class CustomerSerializer(serializers.ModelSerializer):
@@ -30,7 +31,7 @@ class CustomerSerializer(serializers.ModelSerializer):
 class OwnerSerializer(serializers.ModelSerializer):
     class Meta:
         model = TblOwner
-        fields = ('owner_email', 'owner_name', 'owner_nickname', 'shop')
+        fields = ('owner_email', 'owner_name', 'owner_nickname', 'shop_id')
 
 
 class ReviewSerializer(serializers.ModelSerializer):

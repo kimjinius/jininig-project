@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'jiningApp',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
