@@ -12,6 +12,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
+import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
 import retrofit2.Call
 import retrofit2.Callback
@@ -62,8 +64,14 @@ class HomeFragment : Fragment(), OnMapReadyCallback{
             override fun onResponse(call: Call<List<Shop>>, response: Response<List<Shop>>) {
                 val shopList = response.body()
                 for (i in shopList?.indices!!){
-                    
-                    //마커 적용 코드 작성
+
+                    var shop_x = shopList[i].shop_site_x
+                    var shop_y = shopList[i].shop_site_y
+
+                    val marker = Marker()
+                    marker.position = LatLng(shop_x.toDouble(), shop_y.toDouble())
+                    marker.icon = OverlayImage.fromResource(R.drawable.ic_launcher_foreground)
+                    marker.map = naverMap
                     
                 }
             }

@@ -12,7 +12,7 @@ import retrofit2.http.Path
 
 interface ShopAPIS{
 
-    @GET("shop")
+    @GET("/jining/shop/")
     @Headers("accept: application/json\", \"content-type: application/json")
     fun getShop() : Call<List<Shop>>
 
