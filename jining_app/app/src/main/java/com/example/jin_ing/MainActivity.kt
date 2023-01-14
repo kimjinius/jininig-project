@@ -5,6 +5,9 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import com.example.jin_ing.databinding.ActivityMainBinding
 import com.naver.maps.map.NaverMap
+import retrofit2.Call
+import retrofit2.Response
+import javax.security.auth.callback.Callback
 
 class MainActivity : AppCompatActivity() {
 
@@ -28,6 +31,7 @@ class MainActivity : AppCompatActivity() {
             )
             true
         }
+
     }
 
     private fun replaceFragment(fragment: Fragment) {

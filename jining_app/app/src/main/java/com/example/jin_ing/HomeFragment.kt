@@ -1,7 +1,9 @@
 package com.example.jin_ing
 
+import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +13,9 @@ import androidx.fragment.app.FragmentManager
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
 import com.naver.maps.map.util.FusedLocationSource
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class HomeFragment : Fragment(), OnMapReadyCallback{
 
@@ -20,6 +25,8 @@ class HomeFragment : Fragment(), OnMapReadyCallback{
 
     private lateinit var locationSource: FusedLocationSource
     private lateinit var naverMap: NaverMap
+
+    var shopAPIS = ShopAPIS.create()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,6 +57,22 @@ class HomeFragment : Fragment(), OnMapReadyCallback{
     override fun onStart() {
         super.onStart()
         mapView.onStart()
+
+        shopAPIS.getShop().enqueue(object : Callback<List<Shop>>{
+            override fun onResponse(call: Call<List<Shop>>, response: Response<List<Shop>>) {
+                val shopList = response.body()
+                for (i in shopList?.indices!!){
+                    
+                    //마커 적용 코드 작성
+                    
+                }
+            }
+
+            override fun onFailure(call: Call<List<Shop>>, t: Throwable) {
+                errorDialog("Shop get fail", t)
+            }
+
+        })
     }
 
     override fun onResume() {
@@ -112,5 +135,13 @@ class HomeFragment : Fragment(), OnMapReadyCallback{
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
 
+    }
+
+    fun errorDialog(msg: String, t: Throwable){
+        val dialog = AlertDialog.Builder(ct)
+        Log.e(msg, t.message.toString())
+        dialog.setTitle("$msg 에러")
+        dialog.setMessage("호출실패했습니다.")
+        dialog.show()
     }
 }
