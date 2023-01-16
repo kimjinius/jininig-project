@@ -13,12 +13,12 @@ import retrofit2.http.Path
 interface ShopAPIS{
 
     @GET("/jining/shop/")
-    @Headers("accept: application/json\", \"content-type: application/json")
+    @Headers("accept: application/json", "content-type: application/json")
     fun getShop() : Call<List<Shop>>
 
 
     companion object{
-        private const val ipv4 = "127.0.0.1"
+        private const val ipv4 = "172.30.1.60"
         private const val port = "8000"
         fun create(): ShopAPIS{
             val gson: Gson = GsonBuilder().setLenient().create()

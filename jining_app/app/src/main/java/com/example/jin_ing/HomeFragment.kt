@@ -28,6 +28,8 @@ class HomeFragment : Fragment(), OnMapReadyCallback{
     private lateinit var locationSource: FusedLocationSource
     private lateinit var naverMap: NaverMap
 
+    var markerMutable = mutableListOf<Marker>()
+
     var shopAPIS = ShopAPIS.create()
 
     override fun onCreateView(
@@ -59,28 +61,6 @@ class HomeFragment : Fragment(), OnMapReadyCallback{
     override fun onStart() {
         super.onStart()
         mapView.onStart()
-
-        shopAPIS.getShop().enqueue(object : Callback<List<Shop>>{
-            override fun onResponse(call: Call<List<Shop>>, response: Response<List<Shop>>) {
-                val shopList = response.body()
-                for (i in shopList?.indices!!){
-
-                    var shop_x = shopList[i].shop_site_x
-                    var shop_y = shopList[i].shop_site_y
-
-                    val marker = Marker()
-                    marker.position = LatLng(shop_x.toDouble(), shop_y.toDouble())
-                    marker.icon = OverlayImage.fromResource(R.drawable.ic_launcher_foreground)
-                    marker.map = naverMap
-                    
-                }
-            }
-
-            override fun onFailure(call: Call<List<Shop>>, t: Throwable) {
-                errorDialog("Shop get fail", t)
-            }
-
-        })
     }
 
     override fun onResume() {
@@ -138,6 +118,31 @@ class HomeFragment : Fragment(), OnMapReadyCallback{
 
         }
 
+        shopAPIS.getShop().enqueue(object : Callback<List<Shop>>{
+            override fun onResponse(call: Call<List<Shop>>, response: Response<List<Shop>>) {
+
+                val shopList = response.body()
+                for (i in shopList?.indices!!){
+
+                    var shop_x = shopList[i].shop_site_x
+                    var shop_y = shopList[i].shop_site_y
+                    var shop_id = shopList[i].shop_id
+
+                    val marker = Marker()
+                    marker.position = LatLng(shop_x.toDouble(), shop_y.toDouble())
+                    marker.map = naverMap
+
+
+                }
+                Log.d("shop", response.body().toString())
+            }
+
+            override fun onFailure(call: Call<List<Shop>>, t: Throwable) {
+                errorDialog("Shop get fail", t)
+            }
+
+        })
+
     }
 
     companion object {
@@ -147,9 +152,10 @@ class HomeFragment : Fragment(), OnMapReadyCallback{
 
     fun errorDialog(msg: String, t: Throwable){
         val dialog = AlertDialog.Builder(ct)
-        Log.e(msg, t.message.toString())
+        Log.d(msg, t.message.toString())
         dialog.setTitle("$msg 에러")
         dialog.setMessage("호출실패했습니다.")
         dialog.show()
     }
 }
+

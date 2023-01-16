@@ -19,10 +19,6 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-
-        ndk{
-            abiFilters 'libpenguin.so'
-        }
     }
 
     buildTypes {
@@ -43,6 +39,7 @@ dependencies {
     implementation("com.naver.maps:map-sdk:3.16.1") // 네이버 지도
     implementation("androidx.fragment:fragment-ktx:1.5.5")
     implementation 'com.google.android.gms:play-services-location:18.0.0'
+    implementation "com.google.android.material:material:1.2.0-alpha01"
 
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
