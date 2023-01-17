@@ -16,6 +16,12 @@ interface ShopAPIS{
     @Headers("accept: application/json", "content-type: application/json")
     fun getShop() : Call<List<Shop>>
 
+    @GET("jining/shop/{id}/")
+    @Headers("accept: application/json", "content-type: application/json")
+    fun getShopInfo(
+        @Path("id") id : String
+    ): Call<Shop>
+
 
     companion object{
         private const val ipv4 = "172.30.1.60"

@@ -8,11 +8,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.setFragmentResult
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
 import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
 import retrofit2.Call
@@ -43,11 +46,12 @@ class HomeFragment : Fragment(), OnMapReadyCallback{
             .camera(CameraPosition(LatLng(35.1798159, 129.0750222), 15.0))
             .mapType(NaverMap.MapType.Terrain)
 
+
         val fm: FragmentManager = childFragmentManager
         val mapFragment = MapFragment.newInstance(options)
         fm.beginTransaction().add(R.id.map_view, mapFragment).commit()
 
-        mapFragment.getMapAsync(this);
+        mapFragment.getMapAsync(this)
 
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
@@ -128,21 +132,34 @@ class HomeFragment : Fragment(), OnMapReadyCallback{
                     var shop_y = shopList[i].shop_site_y
                     var shop_id = shopList[i].shop_id
 
-                    val marker = Marker()
-                    marker.position = LatLng(shop_x.toDouble(), shop_y.toDouble())
-                    marker.map = naverMap
+                    val marker = Marker().apply {
+                        position = LatLng(shop_x.toDouble(), shop_y.toDouble())
+                        setOnClickListener {
 
+                            val result = shop_id.toString()
+                            setFragmentResult("requestKey", bundleOf("bundleKey" to result))
+                            parentFragmentManager.beginTransaction()
+                                .replace(R.id.home_fragment, ShopBottomSheet())
+                                .commit()
+
+                            val bottomSheet = ShopBottomSheet()
+                            bottomSheet.show(activity!!.supportFragmentManager, bottomSheet.tag)
+
+                            true
+                        }
+                        map = naverMap
+                    }
+//                    marker.position = LatLng(shop_x.toDouble(), shop_y.toDouble())
+//                    marker.map = naverMap
+//                    markerMutable.add(marker)
 
                 }
                 Log.d("shop", response.body().toString())
             }
-
             override fun onFailure(call: Call<List<Shop>>, t: Throwable) {
                 errorDialog("Shop get fail", t)
             }
-
         })
-
     }
 
     companion object {
@@ -157,5 +174,11 @@ class HomeFragment : Fragment(), OnMapReadyCallback{
         dialog.setMessage("호출실패했습니다.")
         dialog.show()
     }
+
+    fun hideMarker(map:NaverMap, marker:Marker){
+        marker.map = null
+    }
+
 }
+
 
